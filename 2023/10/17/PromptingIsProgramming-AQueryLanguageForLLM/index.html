@@ -20,15 +20,24 @@
     var CONFIG = {"hostname":"olive-2019.github.io","root":"/oliviablog.github.io/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Olivia&#39;s Blog">
-<meta property="og:url" content="https://olive-2019.github.io/oliviablog.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F/index.html">
+  <meta name="description" content="PLDI2023的文章，提出LMP(Language Model Programming, 语言模型编程)思想，设计了LMQL(Language Model Query Language, 语言模型查询语言)，它利用来自 LMP prompt的约束和控制流，以生成有效的推理过程，最大限度地减少对底层语言模型的昂贵调用的数量。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Prompting Is Programming:A Query Language For LLM">
+<meta property="og:url" content="https://olive-2019.github.io/oliviablog.github.io/2023/10/17/PromptingIsProgramming-AQueryLanguageForLLM/index.html">
 <meta property="og:site_name" content="Olivia&#39;s Blog">
+<meta property="og:description" content="PLDI2023的文章，提出LMP(Language Model Programming, 语言模型编程)思想，设计了LMQL(Language Model Query Language, 语言模型查询语言)，它利用来自 LMP prompt的约束和控制流，以生成有效的推理过程，最大限度地减少对底层语言模型的昂贵调用的数量。">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://olive-2019.github.io/oliviablog.github.io/image/PromptingIsProgramming-AQueryLanguageForLLM/1697544698103.png">
+<meta property="og:image" content="https://olive-2019.github.io/oliviablog.github.io/image/PromptingIsProgramming-AQueryLanguageForLLM/1697544664866.png">
+<meta property="article:published_time" content="2023-10-17T07:42:37.000Z">
+<meta property="article:modified_time" content="2023-10-17T12:12:02.744Z">
 <meta property="article:author" content="Olivia Lam">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="promptEngineering">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://olive-2019.github.io/oliviablog.github.io/image/PromptingIsProgramming-AQueryLanguageForLLM/1697544698103.png">
 
-<link rel="canonical" href="https://olive-2019.github.io/oliviablog.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">
+<link rel="canonical" href="https://olive-2019.github.io/oliviablog.github.io/2023/10/17/PromptingIsProgramming-AQueryLanguageForLLM/">
 
 
 <script id="page-configurations">
@@ -36,12 +45,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>Tag: 分布式 | Olivia's Blog</title>
+  <title>Prompting Is Programming:A Query Language For LLM | Olivia's Blog</title>
   
 
 
@@ -139,51 +148,98 @@
         <div class="content-wrap">
           
 
-          <div class="content tag">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">分布式
-          <small>Tag</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://olive-2019.github.io/oliviablog.github.io/2023/10/17/PromptingIsProgramming-AQueryLanguageForLLM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/oliviablog.github.io/images/avatar.gif">
+      <meta itemprop="name" content="Olivia Lam">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Olivia's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Prompting Is Programming:A Query Language For LLM
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-10-17 15:42:37 / Modified: 20:12:02" itemprop="dateCreated datePublished" datetime="2023-10-17T15:42:37+08:00">2023-10-17</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2023</span>
+        <p>PLDI2023的文章，提出LMP(Language Model Programming, 语言模型编程)思想，设计了LMQL(Language Model Query Language, 语言模型查询语言)，它利用来自 LMP prompt的约束和控制流，以生成有效的推理过程，最大限度地减少对底层语言模型的昂贵调用的数量。</p>
+<span id="more"></span>
+
+<h1 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h1><p>LLM很牛逼，但是使用过程中面临这些问题</p>
+<ol>
+<li>程序是task-specific model-specific的（无法泛化）</li>
+<li>需要多次交互（不够自动化）</li>
+<li>输出太长（没有约束）</li>
+<li>效率和性能（）</li>
+</ol>
+<p>因此提出了一种新理论，LMP(Language Model Programming, 语言模型编程)，并给出其实践LMQL(Language Model Query Language, 语言模型查询语言)。</p>
+<h1 id="LMP"><a href="#LMP" class="headerlink" title="LMP"></a>LMP</h1><p>LMP思想是：使用少量的<strong>脚本</strong>和<strong>输出限制</strong>，实现前后端分离的LLM提示词工程。例如，允许用户定义复杂的交互、控制流和输出限制。</p>
+<ul>
+<li><strong>脚本</strong>：自动化</li>
+<li><strong>输出限制</strong>：省钱+提高效率</li>
+</ul>
+<h1 id="LMQL"><a href="#LMQL" class="headerlink" title="LMQL"></a>LMQL</h1><h2 id="语法定义"><a href="#语法定义" class="headerlink" title="语法定义"></a>语法定义</h2><p><img src="/oliviablog.github.io/image/PromptingIsProgramming-AQueryLanguageForLLM/1697544698103.png" alt="1697544698103"></p>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p><img src="/oliviablog.github.io/image/PromptingIsProgramming-AQueryLanguageForLLM/1697544664866.png" alt="1697544664866"></p>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2023-10-13T19:28:07+08:00"
-              content="2023-10-13">
-          10-13
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/oliviablog.github.io/tags/LLM/" rel="tag"># LLM</a>
+              <a href="/oliviablog.github.io/tags/promptEngineering/" rel="tag"># promptEngineering</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/oliviablog.github.io/2023/10/13/DS-Lab2/" itemprop="url">
-            <span itemprop="name">DS_Lab2</span>
-          </a>
-      </div>
+        
 
-    </header>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/oliviablog.github.io/2023/10/16/LangChainExpressionLanguage/" rel="prev" title="LangChain Expression Language">
+      <i class="fa fa-chevron-left"></i> LangChain Expression Language
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
   </article>
-
-    </div>
-  </div>
   
   
-  
-
   
 
 
@@ -236,6 +292,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Background"><span class="nav-number">1.</span> <span class="nav-text">Background</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LMP"><span class="nav-number">2.</span> <span class="nav-text">LMP</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LMQL"><span class="nav-number">3.</span> <span class="nav-text">LMQL</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%AD%E6%B3%95%E5%AE%9A%E4%B9%89"><span class="nav-number">3.1.</span> <span class="nav-text">语法定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">3.2.</span> <span class="nav-text">例子</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
