@@ -28,7 +28,7 @@
 <meta property="og:description" content="LCEL">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-10-16T07:27:33.000Z">
-<meta property="article:modified_time" content="2023-10-19T05:44:43.584Z">
+<meta property="article:modified_time" content="2023-10-24T12:23:05.486Z">
 <meta property="article:author" content="Olivia Lam">
 <meta property="article:tag" content="LCEL">
 <meta property="article:tag" content="LangChain">
@@ -182,7 +182,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-10-19 13:44:43" itemprop="dateModified" datetime="2023-10-19T13:44:43+08:00">2023-10-19</time>
+                <time title="Modified: 2023-10-24 20:23:05" itemprop="dateModified" datetime="2023-10-24T20:23:05+08:00">2023-10-24</time>
               </span>
 
           
@@ -213,7 +213,7 @@
 <h1 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h1><p>Runnable对象是LCEL的核心组成部分，Langchain官方对这样的对象统一定义了三个共同的接口，当对象和函数满足这三个接口时，便可被称之为一个Runnable对象。</p>
 <ol>
 <li><strong>stream</strong>方法：调用Runnable时以<strong>流式</strong>返回输出结果（格式好看一点？）</li>
-<li><strong>invoke</strong>方法：基于一个input调用Runnable</li>
+<li><strong>invoke</strong>方法：基于<strong>单个</strong>input调用Runnable</li>
 <li><strong>batch</strong>方法：基于一个list的input<strong>批量</strong>调用Runnable</li>
 </ol>
 <p>上述方法都是同步的，前面加上a就是异步方法。<br>对于上述的三种方法，LCEL不同的Runnable对象支持接收不同的输入，并产生不同的输出，在Python中，能够使用“|”将前一个Runnable对象的输出传递到下一个Runnable对象作为输入，以此达到灵活自定义Prompt并实现“简洁地构建复杂LLM应用”的目的。<br>举个例子，对于LLM这种类型的Runnable，LLM本质是一个大语言模型，该类Runnable对象支持接收字符串类型的输入，并产生字符串类型的输入；对于Tool这种类型的Runnable，则接收一个字符串或者一个字典作为输入，依据Tool本身的构造形成不同的输出；这里值得注意的是，为了实现使用“|”将不同Runnable进行串联，我们还需要记住每个Runnable类支持的输入和输出，这就好比我们把不同型号的水管顺序接起来，我们需要知道每个水管两头的大小型号一样。</p>
@@ -350,13 +350,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/oliviablog.github.io/archives/">
         
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/oliviablog.github.io/tags/">
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
