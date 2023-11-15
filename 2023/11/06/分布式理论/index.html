@@ -20,15 +20,19 @@
     var CONFIG = {"hostname":"olive-2019.github.io","root":"/oliviablog.github.io/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Olivia&#39;s Blog">
-<meta property="og:url" content="https://olive-2019.github.io/oliviablog.github.io/tags/DP/index.html">
+  <meta name="description" content="CAP理论">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式理论">
+<meta property="og:url" content="https://olive-2019.github.io/oliviablog.github.io/2023/11/06/%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA/index.html">
 <meta property="og:site_name" content="Olivia&#39;s Blog">
+<meta property="og:description" content="CAP理论">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-11-06T08:00:51.000Z">
+<meta property="article:modified_time" content="2023-11-10T16:53:12.679Z">
 <meta property="article:author" content="Olivia Lam">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://olive-2019.github.io/oliviablog.github.io/tags/DP/">
+<link rel="canonical" href="https://olive-2019.github.io/oliviablog.github.io/2023/11/06/%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA/">
 
 
 <script id="page-configurations">
@@ -36,12 +40,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>Tag: DP | Olivia's Blog</title>
+  <title>分布式理论 | Olivia's Blog</title>
   
 
 
@@ -139,51 +143,109 @@
         <div class="content-wrap">
           
 
-          <div class="content tag">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">DP
-          <small>Tag</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://olive-2019.github.io/oliviablog.github.io/2023/11/06/%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/oliviablog.github.io/images/avatar.gif">
+      <meta itemprop="name" content="Olivia Lam">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Olivia's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          分布式理论
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-11-06 16:00:51" itemprop="dateCreated datePublished" datetime="2023-11-06T16:00:51+08:00">2023-11-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-11-11 00:53:12" itemprop="dateModified" datetime="2023-11-11T00:53:12+08:00">2023-11-11</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2023</span>
+        <p>CAP理论</p>
+<span id="more"></span>
+<h1 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h1><p>CAP是一个不可能三角，三个特性不可能同时成立</p>
+<ul>
+<li><strong>Consistency</strong>：客户端的每次读操作总能得到一个返回，要么是最新的数据，要么是一个error。强调的是数据的正确性。（线性一致性）</li>
+<li><strong>Availablility</strong>: 每次请求都能获取到非错的响应——但是不保证获取的数据为最新数据。强调的是<strong>没有错误</strong>（No-error）。</li>
+</ul>
+<ul>
+<li>可能会有一部分的服务器无法工作，当发生split-brain问题时，必然有一个“leader”无法得到大多数的votes，因此它是不合法的，但是它仍然可能收到来自client的要求，当不合法的leader意识到自己不合法了，它就不再处理来自客户端的请求了，这会短暂的造成不可用。</li>
+</ul>
+<ul>
+<li><strong>Partition Tolerance</strong>：以实际效果而言，分区相当于对通信的时限要求。系统如果不能在时限内达成数据一致性，就意味着发生了分区的情况，为了保证集群可以继续运行，必须就当前操作在C和A之间做出选择，强调的是<strong>不挂掉</strong>。注意分区未必是脑裂，只要集群中出现了数据不一致的情况，就可以视为分区。</li>
+</ul>
+<h1 id="ACID"><a href="#ACID" class="headerlink" title="ACID"></a>ACID</h1><ul>
+<li>原子性（Atomicity）：事务不可分割</li>
+<li>一致性（Consistency）:并发事务能正确转换数据库状态</li>
+<li>隔离性（Isolation）：并发事务互相不影响</li>
+<li>持久性（Durability）：commit的事务不会丢失</li>
+</ul>
+<h1 id="Consistency"><a href="#Consistency" class="headerlink" title="Consistency"></a>Consistency</h1><p>consensus(共识)、coherence(仅指缓存一致性)、Consistency(事务&#x2F;分布式处理数据一致性)。consensus是达成consistency的过程。consistency又有多个级别。<br>强一致性包括，顺序一致性和线性一致性，弱一致性包括因果一致性和最终一致性。其强度排序如线性一致性&gt;顺序一致性&gt;因果一致性&gt;最终一致性.</p>
+<h2 id="顺序一致性-Sequential-Consistency"><a href="#顺序一致性-Sequential-Consistency" class="headerlink" title="顺序一致性(Sequential Consistency)"></a>顺序一致性(Sequential Consistency)</h2><p>系统中所有请求的数据是一致的，不要求数据写入顺序是否满足全局时钟</p>
+<h2 id="线性一致性-linearizability-consistency"><a href="#线性一致性-linearizability-consistency" class="headerlink" title="线性一致性(linearizability consistency)"></a>线性一致性(linearizability consistency)</h2><p>线性一致性要求获取数据的顺序和数据写入的全局顺序一致</p>
+<h2 id="因果一致性-Casual-Consistency"><a href="#因果一致性-Casual-Consistency" class="headerlink" title="因果一致性(Casual Consistency)"></a>因果一致性(Casual Consistency)</h2><p>有因果关系的数据要有一致性，其他数据不要求</p>
+<h2 id="最终一致性-Eventual-Consistency"><a href="#最终一致性-Eventual-Consistency" class="headerlink" title="最终一致性(Eventual Consistency)"></a>最终一致性(Eventual Consistency)</h2><p>只要一段时间后达到一致就行</p>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2023-10-04T09:43:30+08:00"
-              content="2023-10-04">
-          10-04
-        </time>
-      </div>
+      <footer class="post-footer">
 
-      <div class="post-title">
-          <a class="post-title-link" href="/oliviablog.github.io/2023/10/04/%E4%BF%9D%E8%AF%81%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84dp/" itemprop="url">
-            <span itemprop="name">保证不重复的dp</span>
-          </a>
-      </div>
+        
 
-    </header>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/oliviablog.github.io/2023/11/04/DS-Lecture10-zookeeper/" rel="prev" title="DS-Lecture10:zookeeper">
+      <i class="fa fa-chevron-left"></i> DS-Lecture10:zookeeper
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/oliviablog.github.io/2023/11/08/Raft%E4%BC%98%E5%8C%96/" rel="next" title="Raft优化">
+      Raft优化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
   </article>
-
-    </div>
-  </div>
   
   
-  
-
   
 
 
@@ -236,6 +298,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CAP"><span class="nav-number">1.</span> <span class="nav-text">CAP</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ACID"><span class="nav-number">2.</span> <span class="nav-text">ACID</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Consistency"><span class="nav-number">3.</span> <span class="nav-text">Consistency</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%BA%E5%BA%8F%E4%B8%80%E8%87%B4%E6%80%A7-Sequential-Consistency"><span class="nav-number">3.1.</span> <span class="nav-text">顺序一致性(Sequential Consistency)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E4%B8%80%E8%87%B4%E6%80%A7-linearizability-consistency"><span class="nav-number">3.2.</span> <span class="nav-text">线性一致性(linearizability consistency)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%A0%E6%9E%9C%E4%B8%80%E8%87%B4%E6%80%A7-Casual-Consistency"><span class="nav-number">3.3.</span> <span class="nav-text">因果一致性(Casual Consistency)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7-Eventual-Consistency"><span class="nav-number">3.4.</span> <span class="nav-text">最终一致性(Eventual Consistency)</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
