@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/oliviablog.github.io/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/oliviablog.github.io/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/oliviablog.github.io/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/oliviablog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/oliviablog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/oliviablog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"olive-2019.github.io","root":"/oliviablog.github.io/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="内存管理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CMU15-445-Lec06 Memory Management(Buffer Pools)">
+<meta property="og:url" content="https://olive-2019.github.io/oliviablog.github.io/2024/01/31/CMU15-445-Lec06/index.html">
+<meta property="og:site_name" content="Olivia&#39;s Blog">
+<meta property="og:description" content="内存管理">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-01-31T13:39:34.000Z">
+<meta property="article:modified_time" content="2024-01-31T15:06:04.705Z">
+<meta property="article:author" content="Olivia Lam">
+<meta property="article:tag" content="DB">
+<meta property="article:tag" content="CMU 15-445">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://olive-2019.github.io/oliviablog.github.io/2024/01/31/CMU15-445-Lec06/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>CMU15-445-Lec06 Memory Management(Buffer Pools) | Olivia's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/oliviablog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Olivia's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/oliviablog.github.io/home" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/oliviablog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://olive-2019.github.io/oliviablog.github.io/2024/01/31/CMU15-445-Lec06/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/oliviablog.github.io/images/avatar.gif">
+      <meta itemprop="name" content="Olivia Lam">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Olivia's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CMU15-445-Lec06 Memory Management(Buffer Pools)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-01-31 21:39:34 / Modified: 23:06:04" itemprop="dateCreated datePublished" datetime="2024-01-31T21:39:34+08:00">2024-01-31</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>内存管理</p>
+<span id="more"></span>
+<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>DBMS不能直接操作磁盘数据，需要将其读入内存中操作。存储管理模块需要将数据块在适当的时机从磁盘中读入内存或写出磁盘，为上层执行模块封装数据操作接口。<br>内存管理也可以看成空间管理技术和时间管理技术。空间管理指的是需要将经常连续访问的数据聚集在一起，时间管理指的是减少磁盘和内存中换入换出的时延。</p>
+<h1 id="Locks-vs-Latchs"><a href="#Locks-vs-Latchs" class="headerlink" title="Locks vs. Latchs"></a>Locks vs. Latchs</h1><p>都是保护原语，但是级别不同，用处不同，支持粒度不同。<br>Locks是高级的保护原语，用于事务管理，需要支持回滚。<br>Latches是低级的保护原语，用于特定操作中保护共享的变量，不需要支持回滚。</p>
+<h1 id="Buffer-Pool"><a href="#Buffer-Pool" class="headerlink" title="Buffer Pool"></a>Buffer Pool</h1><p>缓存池用于存储从磁盘中调入数据块的内存空间，是一系列固定大小的page，每一段是一个frame。<br>需要数据时先从缓存池中找，若没有找到对应的page，则从磁盘中调入，修改后的脏数据不会被立即写入，延迟到调出时写。</p>
+<h2 id="Buffer-Pool-Meta-data"><a href="#Buffer-Pool-Meta-data" class="headerlink" title="Buffer Pool Meta-data"></a>Buffer Pool Meta-data</h2><p>page table: </p>
+<ol>
+<li>page id -&gt; frame</li>
+<li>dirty flag: 是否被修改过，若修改过，则需要在调出时写磁盘</li>
+<li>pin&#x2F;reference counter: 当前正在读写该页面的线程数，只要大于0都不能调出磁盘<blockquote>
+<p>需要区分page table和page directory，前者是buffer pool（内存）中的映射，后者是磁盘中的映射，后者需要持久化。</p>
+</blockquote>
+</li>
+</ol>
+<h2 id="Memory-Allocation-Policies"><a href="#Memory-Allocation-Policies" class="headerlink" title="Memory Allocation Policies"></a>Memory Allocation Policies</h2><p>内存分配策略有两条</p>
+<ol>
+<li>全局策略：考虑系统中所有活跃的事务，找到全局最优解</li>
+<li>局部策略：考虑单个事务，找该事务的最优解，为每个事务单独分配内存空间<br>现在的DBMS一般采用二者结合</li>
+</ol>
+<h1 id="Buffer-Pool-Optimizations"><a href="#Buffer-Pool-Optimizations" class="headerlink" title="Buffer Pool Optimizations"></a>Buffer Pool Optimizations</h1><p>buffer pool的优化策略包括以下几种。</p>
+<h2 id="Multiple-Buffer-Pools"><a href="#Multiple-Buffer-Pools" class="headerlink" title="Multiple Buffer Pools"></a>Multiple Buffer Pools</h2><p>DBMS为不同目标的事务准备了不同的buffer pools（如不同的数据库、不同的页类型），每个buffer pool只需要采用局部策略，可以减少不同线程访问缓冲时的竞争，提高并发性。</p>
+<p>可以用object id或page id来找对应的buffer pool</p>
+<h2 id="Pre-fetching"><a href="#Pre-fetching" class="headerlink" title="Pre-fetching"></a>Pre-fetching</h2><p>根据查询计划预调数据块，该优化策略常用于根据某种顺序读取pages，包括根据索引跳读pages。</p>
+<h2 id="Scan-Sharing（Synchronized-Scan）"><a href="#Scan-Sharing（Synchronized-Scan）" class="headerlink" title="Scan Sharing（Synchronized Scan）"></a>Scan Sharing（Synchronized Scan）</h2><p>扫描共享（同步扫描），共享的是扫描的数据流，若存在多个查询都需要扫描同一个表，可以将其扫描策略绑定到同一个cursor上，对于多个扫描只需要走一趟数据。<br>DB2 mysql pg都支持，Oracle仅支持特定查询</p>
+<h2 id="Buffer-Pool-Bypass"><a href="#Buffer-Pool-Bypass" class="headerlink" title="Buffer Pool Bypass"></a>Buffer Pool Bypass</h2><p>buffer pool不存储所有调入的数据，较好地支持顺序读。同时支持临时数据（排序、连接）</p>
+<h1 id="OS-Page-Cache"><a href="#OS-Page-Cache" class="headerlink" title="OS Page Cache"></a>OS Page Cache</h1><p>有的数据库绕过了OS的文件系统，所以不用OS的page cache，因为使用OS文件系统可能带来冗余的拷贝问题，同时也需要额外的管理策略。但是PG没有绕开，使用了OS的page cache。</p>
+<h1 id="Buffer-Replacement-Policies"><a href="#Buffer-Replacement-Policies" class="headerlink" title="Buffer Replacement Policies"></a>Buffer Replacement Policies</h1><p>缓存替换策略的优化目的是提高准确性、速度、meta-data的</p>
+<h2 id="Least-Recently-Used（LRU）"><a href="#Least-Recently-Used（LRU）" class="headerlink" title="Least Recently Used（LRU）"></a>Least Recently Used（LRU）</h2><p>换出最近没有访问的页面，每个页面记录一个时间戳，读写时更新，换出时选择最老的一个。可以用链表维护，减少排序时间</p>
+<h2 id="CLOCK"><a href="#CLOCK" class="headerlink" title="CLOCK"></a>CLOCK</h2><p>时钟算法，相当于LRU的增强，不再需要使用时间戳，而是使用一个flag，最低只需要1个bit来存储</p>
+<h2 id="Alternatives"><a href="#Alternatives" class="headerlink" title="Alternatives"></a>Alternatives</h2><p>LRU和CLOCK算法都容易受到顺序泛洪的影响，即顺序扫描导致缓冲池会被顺序换入换出，最近使用页面是未来最远使用页面。<br>针对顺序泛洪问题，存在一些优化策略：</p>
+<ol>
+<li>LRU-K：记录每个页面前K次访问的时间并计算间隔，用于预测页面下次被访问的时间</li>
+<li>localization: 根据每个事务的需求选择换出的页面，pg为每个查询准备了一个小的回环buffer</li>
+<li>priority hints: 根据page内容和事务需求来决定是否换出page</li>
+</ol>
+<h2 id="dirty-page"><a href="#dirty-page" class="headerlink" title="dirty page"></a>dirty page</h2><p>内存中修改，磁盘未修改的page称为dirty page<br>处理方式</p>
+<ol>
+<li>修改时写：只要改了就写，慢</li>
+<li>调出时写：可能导致系统短时间内负载过高</li>
+<li>二者折中：定时写出dirty page（需要写前日志原则）<blockquote>
+<p>写前日志原则：脏页写回磁盘前需要先写日志</p>
+</blockquote>
+</li>
+</ol>
+<h1 id="Other-Memory-Pools"><a href="#Other-Memory-Pools" class="headerlink" title="Other Memory Pools"></a>Other Memory Pools</h1><p>DBMS除了记录data（tuple）和index以外，也需要记录其他内容，其他内容也需要cache。包括：</p>
+<ol>
+<li>sorting join</li>
+<li>dictionary<br>…</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/oliviablog.github.io/tags/DB/" rel="tag"># DB</a>
+              <a href="/oliviablog.github.io/tags/CMU-15-445/" rel="tag"># CMU 15-445</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/oliviablog.github.io/2024/01/31/CMU15-445-Lec05/" rel="prev" title="CMU15-445-Lec05 Storage Models & Compression">
+      <i class="fa fa-chevron-left"></i> CMU15-445-Lec05 Storage Models & Compression
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Locks-vs-Latchs"><span class="nav-text">Locks vs. Latchs</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Buffer-Pool"><span class="nav-text">Buffer Pool</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Buffer-Pool-Meta-data"><span class="nav-text">Buffer Pool Meta-data</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Memory-Allocation-Policies"><span class="nav-text">Memory Allocation Policies</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Buffer-Pool-Optimizations"><span class="nav-text">Buffer Pool Optimizations</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Multiple-Buffer-Pools"><span class="nav-text">Multiple Buffer Pools</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pre-fetching"><span class="nav-text">Pre-fetching</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Scan-Sharing%EF%BC%88Synchronized-Scan%EF%BC%89"><span class="nav-text">Scan Sharing（Synchronized Scan）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Buffer-Pool-Bypass"><span class="nav-text">Buffer Pool Bypass</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#OS-Page-Cache"><span class="nav-text">OS Page Cache</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Buffer-Replacement-Policies"><span class="nav-text">Buffer Replacement Policies</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Least-Recently-Used%EF%BC%88LRU%EF%BC%89"><span class="nav-text">Least Recently Used（LRU）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CLOCK"><span class="nav-text">CLOCK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Alternatives"><span class="nav-text">Alternatives</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dirty-page"><span class="nav-text">dirty page</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Other-Memory-Pools"><span class="nav-text">Other Memory Pools</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Olivia Lam</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/oliviablog.github.io/archives/">
+        
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/oliviablog.github.io/tags/">
+        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Olive-2019" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Olive-2019" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/oliviablog.github.io/1497250390@qq.com" title="E-Mail → 1497250390@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Olivia Lam</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/oliviablog.github.io/lib/anime.min.js"></script>
+  <script src="/oliviablog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/oliviablog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/oliviablog.github.io/js/utils.js"></script>
+
+<script src="/oliviablog.github.io/js/motion.js"></script>
+
+
+<script src="/oliviablog.github.io/js/schemes/muse.js"></script>
+
+
+<script src="/oliviablog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

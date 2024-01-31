@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"olive-2019.github.io","root":"/oliviablog.github.io/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="database workload数据库工作负载（Database Workloads）是指在数据库系统上运行的一系列操作和查询的集合。这些操作可能包括数据的读取、写入、更新和删除，以及更复杂的查询和事务处理。不同的数据库工作负载反映了数据库在特定环境或应用场景下的使用模式和性能需求。 分类 OLTP（Online Transaction Processing，面向联机事务处理）：短小快速的读写事">
+  <meta name="description" content="数据存储模型、数据表示形式（压缩方式）">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CMU15-445-Lec05 Storage Models &amp; Compression">
 <meta property="og:url" content="https://olive-2019.github.io/oliviablog.github.io/2024/01/31/CMU15-445-Lec05/index.html">
 <meta property="og:site_name" content="Olivia&#39;s Blog">
-<meta property="og:description" content="database workload数据库工作负载（Database Workloads）是指在数据库系统上运行的一系列操作和查询的集合。这些操作可能包括数据的读取、写入、更新和删除，以及更复杂的查询和事务处理。不同的数据库工作负载反映了数据库在特定环境或应用场景下的使用模式和性能需求。 分类 OLTP（Online Transaction Processing，面向联机事务处理）：短小快速的读写事">
+<meta property="og:description" content="数据存储模型、数据表示形式（压缩方式）">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2024-01-31T09:24:07.000Z">
-<meta property="article:modified_time" content="2024-01-31T11:06:04.850Z">
+<meta property="article:modified_time" content="2024-01-31T13:38:43.792Z">
 <meta property="article:author" content="Olivia Lam">
 <meta property="article:tag" content="DB">
 <meta property="article:tag" content="CMU 15-445">
@@ -176,7 +176,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2024-01-31 17:24:07 / Modified: 19:06:04" itemprop="dateCreated datePublished" datetime="2024-01-31T17:24:07+08:00">2024-01-31</time>
+              <time title="Created: 2024-01-31 17:24:07 / Modified: 21:38:43" itemprop="dateCreated datePublished" datetime="2024-01-31T17:24:07+08:00">2024-01-31</time>
             </span>
 
           
@@ -190,7 +190,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="database-workload"><a href="#database-workload" class="headerlink" title="database workload"></a>database workload</h1><p>数据库工作负载（Database Workloads）是指在数据库系统上运行的一系列操作和查询的集合。这些操作可能包括数据的读取、写入、更新和删除，以及更复杂的查询和事务处理。不同的数据库工作负载反映了数据库在特定环境或应用场景下的使用模式和性能需求。</p>
+        <p>数据存储模型、数据表示形式（压缩方式）</p>
+<span id="more"></span>
+<h1 id="database-workload"><a href="#database-workload" class="headerlink" title="database workload"></a>database workload</h1><p>数据库工作负载（Database Workloads）是指在数据库系统上运行的一系列操作和查询的集合。这些操作可能包括数据的读取、写入、更新和删除，以及更复杂的查询和事务处理。不同的数据库工作负载反映了数据库在特定环境或应用场景下的使用模式和性能需求。</p>
 <h2 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h2><ol>
 <li>OLTP（Online Transaction Processing，面向联机事务处理）：短小快速的读<strong>写</strong>事务，要求高并发、低延迟</li>
 <li>OLAP（On-Line Analytical Processing，面向联机分析处理）：复杂<strong>查询</strong>，几乎没有update，要求高吞吐量</li>
@@ -205,12 +207,36 @@
 </ol>
 <p>缺点：查询tuple中部分attributes不友好</p>
 <h2 id="decomposition-storage-model（DSM）"><a href="#decomposition-storage-model（DSM）" class="headerlink" title="decomposition storage model（DSM）"></a>decomposition storage model（DSM）</h2><p>分解存储，即列存储，将所有tuple的某一个attribute顺序存储。<br>对于OLAP（只读、大量表部分数据查询），DSM是完美的存储方式</p>
+<p>列式存储的两种实现方式：定长存储（更常用）、嵌入tuple id存储。前者同一个tuple中的不同attribute的offset是固定的，只需要跳过相同的offset就可以获得同一个tuple下一个attribute的value；后者存储时也存储tuple id，系统记录tuple id和offset的关系，开销更高。</p>
 <p>优点：</p>
 <ol>
 <li>减少读部分数据的I&#x2F;O开销</li>
 <li>更好的查询、数据压缩</li>
 </ol>
 <p>缺点：单点查询、insert、update、delete慢</p>
+<h1 id="Database-Compression"><a href="#Database-Compression" class="headerlink" title="Database Compression"></a>Database Compression</h1><p>磁盘读写开销大，如果对数据进行压缩，读写速度将会加快，但是要平衡。<br>数据可以压缩的原因：数据分布是不均匀的，某些值出现频率会更高；数据是高度相关的</p>
+<p>数据压缩要求：</p>
+<ol>
+<li>压缩后数据定长：允许通过offset访问，提高访问效率，变长数据可以单独存储</li>
+<li>延迟物化：查询时尽量晚解压</li>
+<li>无损压缩</li>
+</ol>
+<p>数据压缩粒度：</p>
+<ol>
+<li>Block Level：压缩相同表的一系列tuple（一个Block）</li>
+<li>Tuple Level：压缩tuple（仅限行存储）</li>
+<li>Attribute Level：压缩单个tuple的单个attribute，可以针对同一个tuple中的多个attribute</li>
+<li>Columnar Level：压缩某个&#x2F;多个attribute的多个value（仅限列存储）</li>
+</ol>
+<h1 id="Naive-Compression"><a href="#Naive-Compression" class="headerlink" title="Naive Compression"></a>Naive Compression</h1><p>Block Level粒度，通常选择压缩&#x2F;解压速度快，压缩率低的方法。读写前都必须解压，延迟物化也导致无法使用DBMS的优化。<br>希望压缩算法可以支持DBMS操作压缩数据，而不必解压。</p>
+<h1 id="Columnar-Compression"><a href="#Columnar-Compression" class="headerlink" title="Columnar Compression"></a>Columnar Compression</h1><p>列式压缩</p>
+<h2 id="Run-Length-Encoding-RLE"><a href="#Run-Length-Encoding-RLE" class="headerlink" title="Run-Length Encoding (RLE)"></a>Run-Length Encoding (RLE)</h2><p>将列中重复数据压缩，压缩方式用三元组表示(value, start position, number)，分别是属性值，存储的开始位置，重复次数。<br>为了优化RLE算法的压缩率，DBMS需要对table中的tuple进行排序</p>
+<h2 id="Bit-Packing-Encoding"><a href="#Bit-Packing-Encoding" class="headerlink" title="Bit-Packing Encoding"></a>Bit-Packing Encoding</h2><p>列中数据不需要那么多位表示时，可将其压缩，不存储冗余位</p>
+<h2 id="mostly-encoding"><a href="#mostly-encoding" class="headerlink" title="mostly encoding"></a>mostly encoding</h2><p>bit-packing encoding的优化，对于异常数据使用标志位+另外存储的方式，避免产生大量冗余位</p>
+<h2 id="bitmap-encoding"><a href="#bitmap-encoding" class="headerlink" title="bitmap encoding"></a>bitmap encoding</h2><p>类似one hot编码，用bitmap（位图）编码所有的value，某列第i行为1说明第i行该attribute的value是该列对应的value</p>
+<h2 id="delta-encoding"><a href="#delta-encoding" class="headerlink" title="delta encoding"></a>delta encoding</h2><p>差量编码，计算values和base value的差值，base value有两种存储方式，一是内联存储（store in-line），即在列的开始部分存储base value，后面都存储delta value；二是单独存储在其他地方。delta encoding可与run-length encoding（RLE）结合获得更高的压缩率</p>
+<h2 id="incremental-encoding"><a href="#incremental-encoding" class="headerlink" title="incremental encoding"></a>incremental encoding</h2><p>增量编码，相对于上一行的差别，需要记录二元组(prefix length, suffix)，分别是公共前缀长度、私有后缀。</p>
+<h2 id="Dictionary-encoding"><a href="#Dictionary-encoding" class="headerlink" title="Dictionary encoding"></a>Dictionary encoding</h2><p>最常用。仅存codes和将code-&gt;value的map。在value处只记录code，要用的时候到map中查。<br>需要支持快速编解码和区间查询。编码不能使用hash，因为需要保证等价性（即f(x) &lt; f(y)成立当且仅当x &lt; y）</p>
 
     </div>
 
@@ -233,7 +259,10 @@
     <a href="/oliviablog.github.io/2024/01/31/CMU15-445-Lec04/" rel="prev" title="CMU15-445-Lec04 database storage 2">
       <i class="fa fa-chevron-left"></i> CMU15-445-Lec04 database storage 2
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/oliviablog.github.io/2024/01/31/CMU15-445-Lec06/" rel="next" title="CMU15-445-Lec06 Memory Management(Buffer Pools)">
+      CMU15-445-Lec06 Memory Management(Buffer Pools) <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -292,7 +321,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#database-workload"><span class="nav-text">database workload</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E7%B1%BB"><span class="nav-text">分类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#data-storage-models"><span class="nav-text">data storage models</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#N-ARY-Storage-model%EF%BC%88NSM%EF%BC%89"><span class="nav-text">N-ARY Storage model（NSM）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#decomposition-storage-model%EF%BC%88DSM%EF%BC%89"><span class="nav-text">decomposition storage model（DSM）</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#database-workload"><span class="nav-text">database workload</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E7%B1%BB"><span class="nav-text">分类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#data-storage-models"><span class="nav-text">data storage models</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#N-ARY-Storage-model%EF%BC%88NSM%EF%BC%89"><span class="nav-text">N-ARY Storage model（NSM）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#decomposition-storage-model%EF%BC%88DSM%EF%BC%89"><span class="nav-text">decomposition storage model（DSM）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Database-Compression"><span class="nav-text">Database Compression</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Naive-Compression"><span class="nav-text">Naive Compression</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Columnar-Compression"><span class="nav-text">Columnar Compression</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Run-Length-Encoding-RLE"><span class="nav-text">Run-Length Encoding (RLE)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bit-Packing-Encoding"><span class="nav-text">Bit-Packing Encoding</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mostly-encoding"><span class="nav-text">mostly encoding</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bitmap-encoding"><span class="nav-text">bitmap encoding</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#delta-encoding"><span class="nav-text">delta encoding</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#incremental-encoding"><span class="nav-text">incremental encoding</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dictionary-encoding"><span class="nav-text">Dictionary encoding</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -306,7 +335,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/oliviablog.github.io/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
