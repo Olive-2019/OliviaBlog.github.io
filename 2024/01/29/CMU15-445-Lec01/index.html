@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/oliviablog.github.io/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/oliviablog.github.io/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/oliviablog.github.io/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/oliviablog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/oliviablog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/oliviablog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"olive-2019.github.io","root":"/oliviablog.github.io/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="CMU45-445第一课，database介绍">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CMU15-445-Lec01">
+<meta property="og:url" content="https://olive-2019.github.io/oliviablog.github.io/2024/01/29/CMU15-445-Lec01/index.html">
+<meta property="og:site_name" content="Olivia&#39;s Blog">
+<meta property="og:description" content="CMU45-445第一课，database介绍">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-01-29T06:05:21.000Z">
+<meta property="article:modified_time" content="2024-01-31T11:06:04.849Z">
+<meta property="article:author" content="Olivia Lam">
+<meta property="article:tag" content="DB">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://olive-2019.github.io/oliviablog.github.io/2024/01/29/CMU15-445-Lec01/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>CMU15-445-Lec01 | Olivia's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/oliviablog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Olivia's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/oliviablog.github.io/home" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/oliviablog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://olive-2019.github.io/oliviablog.github.io/2024/01/29/CMU15-445-Lec01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/oliviablog.github.io/images/avatar.gif">
+      <meta itemprop="name" content="Olivia Lam">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Olivia's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CMU15-445-Lec01
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2024-01-29 14:05:21" itemprop="dateCreated datePublished" datetime="2024-01-29T14:05:21+08:00">2024-01-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-01-31 19:06:04" itemprop="dateModified" datetime="2024-01-31T19:06:04+08:00">2024-01-31</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>CMU45-445第一课，database介绍</p>
+<span id="more"></span>
+
+<h1 id="Databases"><a href="#Databases" class="headerlink" title="Databases"></a>Databases</h1><p>database: collection of related data 关系数据集合<br>database management system: software that manages databases 软件（如mysql、Oracle）</p>
+<h1 id="flat-file"><a href="#flat-file" class="headerlink" title="flat file"></a>flat file</h1><p>CSV存储，简单的存储存在问题，故需要使用DBMS。</p>
+<h1 id="DBMS"><a href="#DBMS" class="headerlink" title="DBMS"></a>DBMS</h1><p>DBMS功能：定义、创建、查询、更新、删除、管理数据</p>
+<p>早期DBMS使用两层结构，应用层、物理层。这两层是紧耦合的，如果需要修改应用层逻辑，需要修改物理层代码。</p>
+<h1 id="Relational-Model"><a href="#Relational-Model" class="headerlink" title="Relational Model"></a>Relational Model</h1><p>为了减少对物理层的修改，需要定义一个逻辑模型，即关系模型，并提出了三个重要的概念：</p>
+<ul>
+<li>简单数据结构（关系模型 relational model）</li>
+<li>高级别语言（sql）</li>
+<li>物理存储实现：DBMS负责写物理层的代码</li>
+<li>Data Model：meta model，relational model是其中一种，包括key-val、Graph、Document&#x2F;Oject、Wide-Column&#x2F;Column-family、Array、Matrix、Vector等</li>
+<li>schema: description of data model</li>
+</ul>
+<h2 id="relation-model"><a href="#relation-model" class="headerlink" title="relation model"></a>relation model</h2><p>关系数据模型定义的三个概念：</p>
+<ol>
+<li>structure: 关系定义</li>
+<li>integrity: 完整性定义</li>
+<li>manipulation: 操作定义</li>
+</ol>
+<h3 id="relation"><a href="#relation" class="headerlink" title="relation"></a>relation</h3><p>unordered set of attributes<br>属性，支持无序存储</p>
+<h3 id="tuple"><a href="#tuple" class="headerlink" title="tuple"></a>tuple</h3><p>set of attribute values，atomic or scalar， but now can be lists or nested data structures<br>元组，原子或标量，现在可以支持有序或嵌套数据结构（即复杂结构struct和Array，甚至支持Map）</p>
+<h3 id="keys"><a href="#keys" class="headerlink" title="keys"></a>keys</h3><p>primary key: 主键，唯一标志，目前支持自增<br>foreign key: 外键，支持映射到其他表</p>
+<h1 id="Data-Manipulation-Language-DMLs"><a href="#Data-Manipulation-Language-DMLs" class="headerlink" title="Data Manipulation Language (DMLs)"></a>Data Manipulation Language (DMLs)</h1><ul>
+<li>Procedural: 过程化语言，需要定义获取数据方式</li>
+<li>Non-Procedural&#x2F;Declarative: 声明式语言，仅需要定义获取什么数据</li>
+</ul>
+<h1 id="Relational-Algebra"><a href="#Relational-Algebra" class="headerlink" title="Relational Algebra"></a>Relational Algebra</h1><p>关系代数是一组基本操作，用于检索和操作关系中的元组。每个操作符接受一个或多个关系作为输入，并输出一个新的关系。通过将这些操作符“链接”在一起，我们可以编写查询以创建更复杂的操作。</p>
+<ul>
+<li>selection: 选择，选择满足条件的元组</li>
+<li>projection: 投影，选择元组中的某些属性</li>
+<li>union: 并集，合并两个关系的元组</li>
+<li>intersection: 交集，选择同时存在于两个关系的元组</li>
+<li>difference: 差集，选择存在于第一个关系而不存在于第二个关系的元组</li>
+<li>cartesian product&#x2F;join: 笛卡尔积，合并两个关系的所有可能元组组合</li>
+</ul>
+<h1 id="Obervation"><a href="#Obervation" class="headerlink" title="Obervation"></a>Obervation</h1><p>等价关系代数的不同写法可能导致不同的执行效率，需要根据实际标准书写</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/oliviablog.github.io/tags/DB/" rel="tag"># DB</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/oliviablog.github.io/2023/12/21/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93/" rel="prev" title="大模型总结">
+      <i class="fa fa-chevron-left"></i> 大模型总结
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/oliviablog.github.io/2024/01/29/CMU15-445-Lec02/" rel="next" title="CMU15-445-Lec02">
+      CMU15-445-Lec02 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Databases"><span class="nav-text">Databases</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#flat-file"><span class="nav-text">flat file</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DBMS"><span class="nav-text">DBMS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Relational-Model"><span class="nav-text">Relational Model</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#relation-model"><span class="nav-text">relation model</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#relation"><span class="nav-text">relation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tuple"><span class="nav-text">tuple</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#keys"><span class="nav-text">keys</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Data-Manipulation-Language-DMLs"><span class="nav-text">Data Manipulation Language (DMLs)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Relational-Algebra"><span class="nav-text">Relational Algebra</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Obervation"><span class="nav-text">Obervation</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Olivia Lam</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/oliviablog.github.io/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/oliviablog.github.io/tags/">
+        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Olive-2019" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Olive-2019" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/oliviablog.github.io/1497250390@qq.com" title="E-Mail → 1497250390@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Olivia Lam</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/oliviablog.github.io/lib/anime.min.js"></script>
+  <script src="/oliviablog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/oliviablog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/oliviablog.github.io/js/utils.js"></script>
+
+<script src="/oliviablog.github.io/js/motion.js"></script>
+
+
+<script src="/oliviablog.github.io/js/schemes/muse.js"></script>
+
+
+<script src="/oliviablog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+</body>
+</html>
