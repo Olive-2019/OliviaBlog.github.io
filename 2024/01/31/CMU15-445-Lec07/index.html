@@ -20,19 +20,20 @@
     var CONFIG = {"hostname":"olive-2019.github.io","root":"/oliviablog.github.io/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="教育背景本科：吉林大学 软件学院 工科试验班 2019-2023研究生：清华大学 软件学院 在读硕士生 2023-至今 项目经历关系型数据库引擎使用 C++ 从0到1 实现小型数据库引擎，架构参考斯坦福 CS346 的 redbase，算法参考 postgresql、mysql 等主流数据库，分为 IX、PF、QL 等模块，总代码量超过 1.4W 行  SQL 解析模块的设计与实现，建立抽象语法树">
-<meta property="og:type" content="website">
-<meta property="og:title" content="home">
-<meta property="og:url" content="https://olive-2019.github.io/oliviablog.github.io/home/index.html">
+  <meta name="description" content="hash表数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CMU15-445-Lec07 Hash Tables">
+<meta property="og:url" content="https://olive-2019.github.io/oliviablog.github.io/2024/01/31/CMU15-445-Lec07/index.html">
 <meta property="og:site_name" content="Olivia&#39;s Blog">
-<meta property="og:description" content="教育背景本科：吉林大学 软件学院 工科试验班 2019-2023研究生：清华大学 软件学院 在读硕士生 2023-至今 项目经历关系型数据库引擎使用 C++ 从0到1 实现小型数据库引擎，架构参考斯坦福 CS346 的 redbase，算法参考 postgresql、mysql 等主流数据库，分为 IX、PF、QL 等模块，总代码量超过 1.4W 行  SQL 解析模块的设计与实现，建立抽象语法树">
+<meta property="og:description" content="hash表数据结构">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2023-11-15T08:47:01.000Z">
-<meta property="article:modified_time" content="2024-02-07T08:29:03.159Z">
+<meta property="article:published_time" content="2024-01-31T15:39:32.000Z">
+<meta property="article:modified_time" content="2024-02-01T05:34:22.667Z">
 <meta property="article:author" content="Olivia Lam">
+<meta property="article:tag" content="DB">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://olive-2019.github.io/oliviablog.github.io/home/">
+<link rel="canonical" href="https://olive-2019.github.io/oliviablog.github.io/2024/01/31/CMU15-445-Lec07/">
 
 
 <script id="page-configurations">
@@ -40,13 +41,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>home | Olivia's Blog
-</title>
+  <title>CMU15-445-Lec07 Hash Tables | Olivia's Blog</title>
   
 
 
@@ -143,65 +143,114 @@
       <div class="main-inner">
         <div class="content-wrap">
           
-  
-  
 
-          <div class="content page posts-expand">
+          <div class="content post posts-expand">
             
 
     
-    
-    
-    <div class="post-block" lang="en">
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://olive-2019.github.io/oliviablog.github.io/2024/01/31/CMU15-445-Lec07/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/oliviablog.github.io/images/avatar.gif">
+      <meta itemprop="name" content="Olivia Lam">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Olivia's Blog">
+    </span>
       <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CMU15-445-Lec07 Hash Tables
+        </h1>
 
-<h1 class="post-title" itemprop="name headline">home
-</h1>
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
 
-<div class="post-meta">
+              <time title="Created: 2024-01-31 23:39:32" itemprop="dateCreated datePublished" datetime="2024-01-31T23:39:32+08:00">2024-01-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-02-01 13:34:22" itemprop="dateModified" datetime="2024-02-01T13:34:22+08:00">2024-02-01</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>hash表数据结构</p>
+<span id="more"></span>
+<h1 id="Data-Structure"><a href="#Data-Structure" class="headerlink" title="Data Structure"></a>Data Structure</h1><p>DBMS包括不同的数据结构，包括：internal meta-data（自包含meta-data）、core data storage（核心数据存储，即元组存储方式）、Temporary Data Structures（临时数据结构，例如join过程中使用的hash table）、table indices（用于快速找到数据的索引）</p>
+<p>数据结构设计目标：读写高效的数据组织方式、安全的并发访问</p>
+<h1 id="Hash-Table"><a href="#Hash-Table" class="headerlink" title="Hash Table"></a>Hash Table</h1><p>hash table的读写平均时间复杂度是O(1)，最坏时间复杂度在O(n)，空间复杂度在O(n)。</p>
+<p>hash table包含两部分内容：</p>
+<ol>
+<li>hash function：将key映射到一个域内，需要平衡function计算时间和碰撞概率，目前sota是facebook的XXHash3</li>
+<li>hashing schema：解决key碰撞的方法，需要平衡function计算时间和碰撞解决的计算时间</li>
+</ol>
+<h1 id="Static-Hash-Schema"><a href="#Static-Hash-Schema" class="headerlink" title="Static Hash Schema"></a>Static Hash Schema</h1><p>静态hash schema的hash table大小固定，当hash table装满时，需要rebuild。</p>
+<h2 id="Linear-Probe-Hashing"><a href="#Linear-Probe-Hashing" class="headerlink" title="Linear Probe Hashing"></a>Linear Probe Hashing</h2><p>线性探测hash，同时存储key和value。插入发生碰撞时，依次往后探测，直到找到一个空位。查找时，依次往后探测，直到找到目标key。<br>删除有两种解决方案，</p>
+<ol>
+<li>标记删除，将key标记为删除，下次查找时忽略标记为删除的key</li>
+<li>删除后，将后面的元素前移，但是需要注意不能移动在对应位置的元素<br>对于不唯一的key，有两种方式存储，可以另外开辟空间用链表存储，也可以存储冗余key</li>
+</ol>
+<h2 id="Robin-Hood-Hashing"><a href="#Robin-Hood-Hashing" class="headerlink" title="Robin Hood Hashing"></a>Robin Hood Hashing</h2><p>Linear Probe Hashing的变体，比linear probe多记录一个距离key原本位置的距离，当发生碰撞线性查找空槽位时，若自己的距离大于该槽位上键值的距离，则交换位置。</p>
+<h2 id="Cuckoo-Hashing"><a href="#Cuckoo-Hashing" class="headerlink" title="Cuckoo Hashing"></a>Cuckoo Hashing</h2><p>维护多个使用不同hash function的hash table。插入时面临下面几种状况：</p>
+<ol>
+<li>存在一个hash table该槽位为空，插入成功</li>
+<li>不存在hash table该槽位为空，选一个槽位替换，将旧的entry插入到其他hash table中</li>
+<li>若造成循环，则rebuild hash table<br>该方法查找和删除都是O(1)的复杂度，插入复杂度较高</li>
+</ol>
+<h1 id="Dynamic-Hashing-Schemes"><a href="#Dynamic-Hashing-Schemes" class="headerlink" title="Dynamic Hashing Schemes"></a>Dynamic Hashing Schemes</h1><p>静态方法都需要大概了解hash table的entry数量，否则经常需要rebuild，动态hash schema允许hash table大小不固定，当装满时，自动扩缩容。</p>
+<h2 id="Chained-Hashing"><a href="#Chained-Hashing" class="headerlink" title="Chained Hashing"></a>Chained Hashing</h2><p>冲突时，将key和value存储在多个以链表形式组织的bucket中。</p>
+<h2 id="Extendible-Hashing"><a href="#Extendible-Hashing" class="headerlink" title="Extendible Hashing"></a>Extendible Hashing</h2><p>对比chained hashing，extendible hashing不让bucket无限增长，当bucket满的时候，分裂bucket，若local depth达到global depth，则global depth加1，slot翻倍。</p>
+<h2 id="Linear-Hashing"><a href="#Linear-Hashing" class="headerlink" title="Linear Hashing"></a>Linear Hashing</h2>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/oliviablog.github.io/tags/DB/" rel="tag"># DB</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/oliviablog.github.io/2024/01/31/CMU15-445-Lec06/" rel="prev" title="CMU15-445-Lec06 Memory Management(Buffer Pools)">
+      <i class="fa fa-chevron-left"></i> CMU15-445-Lec06 Memory Management(Buffer Pools)
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
-</div>
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
-          <h1 id="教育背景"><a href="#教育背景" class="headerlink" title="教育背景"></a>教育背景</h1><p>本科：吉林大学 软件学院 工科试验班 2019-2023<br>研究生：清华大学 软件学院 在读硕士生 2023-至今</p>
-<h1 id="项目经历"><a href="#项目经历" class="headerlink" title="项目经历"></a>项目经历</h1><h2 id="关系型数据库引擎"><a href="#关系型数据库引擎" class="headerlink" title="关系型数据库引擎"></a>关系型数据库引擎</h2><p>使用 C++ 从0到1 实现小型数据库引擎，架构参考斯坦福 CS346 的 redbase，算法参考 postgresql、mysql 等主流数据库，分为 IX、PF、QL 等模块，总代码量超过 1.4W 行</p>
-<ul>
-<li>SQL 解析模块的设计与实现，建立抽象语法树</li>
-<li>SQL 优化模块的算法设计部分，采用动态规划算法和智能算法平衡执行时间和优化计算时间</li>
-<li>页式存储管理模块的设计与编码工作，将 LRU 和 pin 机制结合解决偶发性的、周期性的大量访问冷文件淘汰大量热点文件导致 LRU 命中率急剧下降的问题</li>
-</ul>
-<h2 id="可分片key-value分布式容错数据库"><a href="#可分片key-value分布式容错数据库" class="headerlink" title="可分片key value分布式容错数据库"></a>可分片key value分布式容错数据库</h2><p>参考 mit6.824 Lab2,3,4 从0到1自行分析设计，实现分布式容错系统</p>
-<ul>
-<li>实现底层 Raft 协议保证集群中不同节点能够达成一致</li>
-<li>在 Raft 协议的基础上实现了支持线性一致性读写的 kv 数据库</li>
-<li>shardCtrler 管理分片 config，shardKV 在线性一致性读写的 kv 数据库基础上实现分片与数据迁移功能</li>
-</ul>
-<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>FTP文件传输框架：使用C++原生socket和raw socket开发FTP框架，实现TCP、UDP双模式文件传输，支持ping、断点续传等功能<br>map reduce计算框架：用 C++ 开发轻量级分布式计算框架。允许用户自定义分布式计算任务</p>
-<h1 id="实习经历"><a href="#实习经历" class="headerlink" title="实习经历"></a>实习经历</h1><p>spark SQL二次开发，工作内容集中在引擎层</p>
-<ul>
-<li>设计、开发named struct语法和解析校验</li>
-<li>开放null值插入</li>
-<li>基于UDF模块，允许通过Scala、Java等语言创建view</li>
-</ul>
-<h1 id="近期兴趣"><a href="#近期兴趣" class="headerlink" title="近期兴趣"></a>近期兴趣</h1><p>CMU15-445，目前基于课程代码完成project 1</p>
-<h1 id="获奖情况"><a href="#获奖情况" class="headerlink" title="获奖情况"></a>获奖情况</h1><p>国家奖学金*2、南瑞继保奖学金、校优秀学生等</p>
-
-      </div>
-      
-      
-      
-    </div>
-    
-
-    
-    
-    
 
 
           </div>
@@ -252,7 +301,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%99%E8%82%B2%E8%83%8C%E6%99%AF"><span class="nav-text">教育背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E7%BB%8F%E5%8E%86"><span class="nav-text">项目经历</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93%E5%BC%95%E6%93%8E"><span class="nav-text">关系型数据库引擎</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E5%88%86%E7%89%87key-value%E5%88%86%E5%B8%83%E5%BC%8F%E5%AE%B9%E9%94%99%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-text">可分片key value分布式容错数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-text">其他</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E4%B9%A0%E7%BB%8F%E5%8E%86"><span class="nav-text">实习经历</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%91%E6%9C%9F%E5%85%B4%E8%B6%A3"><span class="nav-text">近期兴趣</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%8E%B7%E5%A5%96%E6%83%85%E5%86%B5"><span class="nav-text">获奖情况</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Data-Structure"><span class="nav-text">Data Structure</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hash-Table"><span class="nav-text">Hash Table</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Static-Hash-Schema"><span class="nav-text">Static Hash Schema</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Linear-Probe-Hashing"><span class="nav-text">Linear Probe Hashing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Robin-Hood-Hashing"><span class="nav-text">Robin Hood Hashing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cuckoo-Hashing"><span class="nav-text">Cuckoo Hashing</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Dynamic-Hashing-Schemes"><span class="nav-text">Dynamic Hashing Schemes</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Chained-Hashing"><span class="nav-text">Chained Hashing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Extendible-Hashing"><span class="nav-text">Extendible Hashing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linear-Hashing"><span class="nav-text">Linear Hashing</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
