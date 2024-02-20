@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/oliviablog.github.io/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/oliviablog.github.io/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/oliviablog.github.io/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/oliviablog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/oliviablog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/oliviablog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"olive-2019.github.io","root":"/oliviablog.github.io/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="索引并发控制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CMU15-445-Lec09 Index Concurrency Control">
+<meta property="og:url" content="https://olive-2019.github.io/oliviablog.github.io/2024/02/20/CMU15-445-Lec09/index.html">
+<meta property="og:site_name" content="Olivia&#39;s Blog">
+<meta property="og:description" content="索引并发控制">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-02-20T14:01:28.000Z">
+<meta property="article:modified_time" content="2024-02-20T15:12:34.750Z">
+<meta property="article:author" content="Olivia Lam">
+<meta property="article:tag" content="DB">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://olive-2019.github.io/oliviablog.github.io/2024/02/20/CMU15-445-Lec09/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>CMU15-445-Lec09 Index Concurrency Control | Olivia's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/oliviablog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Olivia's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/oliviablog.github.io/home" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/oliviablog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://olive-2019.github.io/oliviablog.github.io/2024/02/20/CMU15-445-Lec09/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/oliviablog.github.io/images/avatar.gif">
+      <meta itemprop="name" content="Olivia Lam">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Olivia's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CMU15-445-Lec09 Index Concurrency Control
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-02-20 22:01:28 / Modified: 23:12:34" itemprop="dateCreated datePublished" datetime="2024-02-20T22:01:28+08:00">2024-02-20</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>索引并发控制</p>
+<span id="more"></span>
+<h1 id="索引并发控制"><a href="#索引并发控制" class="headerlink" title="索引并发控制"></a>索引并发控制</h1><p>需要保证两种正确性</p>
+<ol>
+<li>逻辑正确性：数据一致性</li>
+<li>物理正确性：读取合法位置</li>
+</ol>
+<p>本节讨论物理正确性</p>
+<h1 id="Lock-Latches"><a href="#Lock-Latches" class="headerlink" title="Lock &amp; Latches"></a>Lock &amp; Latches</h1><p>Lock是高级别的互斥原语，在事务中保护数据库中的内容，如table、tuple、databases。Locks需要保证回滚<br>Latches是低级别的互斥原语，在DBMS中保护内部数据结构，如内存区等。Latches不需要保证回滚。分为读写两种Latches，读Latches允许多个线程同时获取，写Latches只允许一个线程获取，写Latches同时阻塞读Latches。</p>
+<h1 id="Latches-Implementations"><a href="#Latches-Implementations" class="headerlink" title="Latches Implementations"></a>Latches Implementations</h1><ol>
+<li>Blocking OS Mutex：系统锁，使用简单，但是开销大且不易扩展(C++ mutex)</li>
+<li>Test-and-Set Spin Latch (TAS):自旋锁，做CAS操作，允许DBMS控制latches。可扩展性和缓存都不行，因为CAS会导致多次执行同一个操作（C++ atomic）<blockquote>
+<p>CAS：乐观锁，执行前先拷贝value，修改时比较value，若未被修改则写入，否则重试</p>
+</blockquote>
+</li>
+<li>Reader-Writer Latches：读写锁，区分读写操作，允许多个读操作并发。DBMS需要协调避免线程饥饿现象（C++ shared_mutex）</li>
+</ol>
+<h1 id="Hash-Table-Latching"><a href="#Hash-Table-Latching" class="headerlink" title="Hash Table Latching"></a>Hash Table Latching</h1><ol>
+<li>static hash schema：静态hash模式下，基本都是同向读写，不会导致并发问题，当需要resize时，加一把大锁即可</li>
+<li>dynamic hash schema：动态hash模式下，有更多的共享变量，需要加锁来保证并发安全。有两种加锁方式<br> 2.1. page锁：每一个page有一个读写锁，会导致资源浪费，因为不同线程可能写同一个page的不同slot<br> 2.2. slot锁：每个slot维持一把锁，并发度高，但是效率低，读写每个slot都要加锁&amp;释放锁</li>
+</ol>
+<p>可以采取CAS的线性探测hash table来避免加锁</p>
+<h1 id="B-Tree-Latching"><a href="#B-Tree-Latching" class="headerlink" title="B+Tree Latching"></a>B+Tree Latching</h1><p>解决两个问题：</p>
+<ol>
+<li>多线程并发修改某一个node</li>
+<li>一个线程读到其他线程正在分裂&#x2F;合并的node</li>
+</ol>
+<p>核心思想：</p>
+<ol>
+<li>给父亲节点加锁</li>
+<li>给儿子节点加锁</li>
+<li>当儿子节点安全后释放父亲节点的锁<blockquote>
+<p>安全：儿子节点不会分裂&#x2F;合并</p>
+</blockquote>
+</li>
+</ol>
+<p>优化思想（乐观锁）：写时给非叶节点加读锁，叶节点加写锁，若叶节点需要调整，则重新走一趟悲观锁</p>
+<p>避免死锁原则：no-wait，当无法获取锁时，即重演操作</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/oliviablog.github.io/tags/DB/" rel="tag"># DB</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/oliviablog.github.io/2024/02/08/CMU15-445-Lec08/" rel="prev" title="CMU15-445-Lec08 Tree Index">
+      <i class="fa fa-chevron-left"></i> CMU15-445-Lec08 Tree Index
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6"><span class="nav-text">索引并发控制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Lock-Latches"><span class="nav-text">Lock &amp; Latches</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Latches-Implementations"><span class="nav-text">Latches Implementations</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hash-Table-Latching"><span class="nav-text">Hash Table Latching</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#B-Tree-Latching"><span class="nav-text">B+Tree Latching</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Olivia Lam</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/oliviablog.github.io/archives/">
+        
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/oliviablog.github.io/tags/">
+        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Olive-2019" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Olive-2019" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/oliviablog.github.io/1497250390@qq.com" title="E-Mail → 1497250390@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Olivia Lam</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/oliviablog.github.io/lib/anime.min.js"></script>
+  <script src="/oliviablog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/oliviablog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/oliviablog.github.io/js/utils.js"></script>
+
+<script src="/oliviablog.github.io/js/motion.js"></script>
+
+
+<script src="/oliviablog.github.io/js/schemes/muse.js"></script>
+
+
+<script src="/oliviablog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+</body>
+</html>
